@@ -1,0 +1,263 @@
+Program 1:
+AREA MULTIPLY, CODE, READONLY
+	ENTRY
+	LDRH R1, N1
+	LDRH R2, N2
+	MUL R3, R1, R2
+	LDR R0, PRODUCT
+	STR R3, [R0]
+BACK B BACK
+N1 DCW 5
+N2 DCW 6
+PRODUCT DCD 0x40000000
+	END
+
+Program 2:
+AREA SUM, CODE, READONLY
+	ENTRY
+	MOV R0, #10
+	MOV R1, #0
+	MOV R2, #1
+NEXT ADD R1, R1, R2
+	SUBS R0, #1
+	ADD R2, #1
+	BNE NEXT
+	LDR R3, RES
+	STR R1, [R3]
+BACK B BACK
+RES DCD 0x40000000
+	END
+
+Program 3:
+AREA FACTORIAL, CODE, READONLY
+	ENTRY
+	LDR R0, NUM
+	LDRB R1, [R0]
+	MOV R2, #1
+	CMP R1, #0
+	BEQ STORE
+	MOV R2, R1
+UP SUBS R1, #1
+	CMP R1, #0
+	BEQ STORE
+	MUL R3, R2, R1
+	MOV R2, R3
+	B UP
+STORE LDR R0, RESULT
+	STR R2, [R0]
+BACK B BACK
+NUM DCD 0X40000000
+RESULT DCD 0X40000010
+	END
+
+Program 4:
+AREA SUM, CODE, READONLY
+	ENTRY
+	LDR R0, MEMORY 
+	MOV R1, #4 
+	LDRH R2, [R0]  
+	SUB R1, #1 
+UP ADD R0, R0, #2 
+	LDRH R3, [R0] 
+	ADD R2, R3, R2 
+NEXT SUB R1, #1 
+	CMP R1, #0 
+	BNE UP 
+	LDR R0, RESULT
+	STR R2, [R0] 
+BACK B BACK
+MEMORY DCD 0X40000000
+RESULT DCD 0X40000010
+	END
+
+00 - 01 00 02 00 03 00 04
+
+Program 5:
+AREA SQUARE, CODE, READONLY
+	ENTRY
+	LDR R0, LOOKUP 
+	LDRB R1, [R0] 
+	ADD R0, R0, R1 
+	LDRB R3, [R0] 
+	LDR R2, RESULT
+	STR R3, [R2] 
+BACK B BACK
+LOOKUP DCD 0X40000000
+RESULT DCD 0X40000010
+	END
+
+01-01
+02-04
+03-09
+04-10
+05-19
+06-24
+07-31
+08-40
+09-51
+0A-64
+
+Program 6:
+	AREA LARGEST, CODE, READONLY
+	ENTRY
+	MOV R5, #5 
+	LDR R0, A 
+	LDR R2, [R0] 
+NEXT ADD R0, #4 
+	LDR R3, [R0] 
+	CMP R2, R3
+	BHS LARGE 
+	MOV R2, R3 
+LARGE SUBS R5, #1 
+	BNE NEXT 
+	LDR R1, RES
+	STR R2, [R1]
+BACK B BACK
+A DCD 0X40000000
+RES DCD 0X40000020
+	END
+
+00-12
+04-10
+08-22
+0C-34
+10-16
+14-25
+
+Program 7:
+AREA SORT, CODE, READONLY
+	ENTRY
+	MOV R5, #3 
+NXTPASS LDR R0, A
+	MOV R4, R5
+NXTCOMP LDR R2, [R0] 
+	MOV R1, R2 
+	ADD R0, #4 
+	LDR R2, [R0] 
+	CMP R1, R2
+	BLS NOEXG 
+	STR R1, [R0], #-4 
+	STR R2, [R0], #4
+NOEXG SUBS R4, #1 
+	BNE NXTCOMP
+	SUBS R5, #1 
+	BNE NXTPASS
+BACK B BACK
+A DCD 0X40000000
+	END
+
+00-09
+04-12
+08-20
+0C-34
+
+Program 8:
+AREA PROGRAM, CODE, READONLY
+		ENTRY
+		LDR R0, MEMORY
+	 	LDR R1, [R0]
+	    MOV R4, #32
+ROTATE  RORS R1, #1;
+	    BCS ONES
+	    ADD R3, R3, #1
+	    B NEXT
+ONES
+        ADD R2, R2, #1
+NEXT    SUB R4, R4, #1
+        CMP R4,#0
+	    BNE ROTATE
+	    ADD R0, R0, #4
+	    STRB R2, [R0]
+	    ADD R0, R0, #1
+	    STRB R3, [R0]
+BACK    B BACK
+MEMORY  DCD 0X40000000
+	    END
+
+00 - 03 04 07 02
+
+Program 9:
+#include<LPC214x.h>
+char *msg="Hello World";
+int main()
+{
+	PINSEL0 = 0X5;
+	U0LCR=0X83; 
+        
+
+ 	U0DLM = 0X00;
+ 	U0DLL=0X13; 	
+
+	U0LCR=0X03;		   
+
+	while(*msg!=0X00)
+ 	{
+ 		while(!(U0LSR & 0X20) );
+   		U0THR = *msg;
+    	msg++;
+	}
+}
+
+Program 10:
+#include <LPC214X.h>
+void  delay();
+void delay() 
+{
+  int i,j;
+  for(i=0;i<0xff;i++)
+     for(j=0;j<0x25;j++);
+}
+int main()
+{
+  IO0DIR=0x000F0000;      
+  IO0PIN=0x00010000; 
+  delay();
+  IO0PIN=0x00020000;
+  delay();
+  IO0PIN=0x00040000;
+  delay();
+  IO0PIN=0x00080000; 
+  delay();
+}
+
+Program 15:
+#include <LPC214x.h> 
+int main(void)
+{
+IO1DIR = 0x00FF0000; 
+while(1) 
+{
+IO1CLR = 0x00FF0000; 
+ 	while(IO0PIN & 0x00008000);
+   	while(!(IO0PIN & 0x00008000));
+IO1SET = 0x00FF0000; 
+	while(IO0PIN & 0x00008000);
+  	while(!(IO0PIN & 0x00008000));
+}
+}
+
+Program 16:
+#include<LPC214X.H>
+void delay();
+unsigned int i, j , k;
+unsigned int ar[]={ 0xf004, 0xf13c, 0xf048, 0xf018, 0xf130, 0xf090, 0xf080, 0xf03c, 0xf000, 0xf010, 0xf020, 0xf180, 0xf1c8, 0xf108, 0xf0c0, 0xf0e0 };
+int main()
+{
+PINSEL0=0x00000000;
+IO0DIR = 0x000001FF;
+while(1)
+{
+for(i=0;i<16;i++)
+{
+IO0SET = ar[i];
+delay();
+IO0CLR=ar[i];
+}
+}
+
+}
+void delay()
+{
+for(j=0;j<500;j++)
+for(k=0;k<500;k++);
+}
